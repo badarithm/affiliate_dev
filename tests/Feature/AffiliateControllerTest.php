@@ -61,18 +61,11 @@ class AffiliateControllerTest extends TestCase
         $response->assertSee('Something went wrong');
     }
 
-//    private function createFileContents(array $entries): string
-//    {
-//        return array('content' => implode(PHP_EOL, array(
-//            json_encode(),
-//            json_encode(),
-//            json_encode(["latitude" => 51.8856167, "affiliate_id" => 2, "name" => "Mohamed Bradshaw", "longitude" => -10.4240951]),
-//            json_encode(["latitude" => 52.3191841, "affiliate_id" => 3, "name" => "Rudi Palmer", "longitude" => -8.5072391]),
-//        )),
-//            'passable' => array(["latitude" => 52.986375, "affiliate_id" => 12, "name" =>  "Yosef Giles", "longitude" => -6.043701])
-//        );
-//    }
-
+    /**
+     * Generates a string from 2 dimensional array
+     * @param array[] $entries
+     * @return string
+     */
     private function generateFileContents(array $entries): string
     {
         return implode(PHP_EOL, array_map(function(array $entries): string {
@@ -118,7 +111,7 @@ class AffiliateControllerTest extends TestCase
                 $response->assertSeeText($entry['longitude']);
             } else {
                 $response->assertDontSeeText($entry['latitude']);
-//                This can coincide with some other number
+//                This can coincide with some other number from latitude / longitude
 //                $response->assertDontSeeText($entry['affiliate_id']);
                 $response->assertDontSeeText($entry['name']);
                 $response->assertDontSeeText($entry['longitude']);
