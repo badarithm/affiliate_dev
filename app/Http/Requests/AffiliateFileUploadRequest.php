@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 use phpDocumentor\Reflection\Types\Collection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
