@@ -20,18 +20,21 @@ class AffiliateControllerTest extends TestCase
     }
 
     /**
-     * A basic feature test example.
+     * Test if form is shown and critical fields are shown;
      *
      * @return void
      */
-    public function testHomeScreenExists()
+    public function testHomeScreenExistsAndContainsFileUploadForm()
     {
         $response = $this->get('/');
-
         $response->assertStatus(200);
         $response->assertSee('Home');
         $response->assertSee('Please attach file with affiliate locations');
-        $response->assertSee('Submit');
+        $response->assertSee('form class="row g-3" method="POST"', false);
+        $response->assertSee('enctype="multipart/form-data', false);
+        $response->assertSee('<input type="hidden" name="_token" value="', false);
+        $response->assertSee('<input name="affiliate_file" class="form-control" type="file" id="affiliate-file">', false);
+        $response->assertSee('<button type="submit" class="btn btn-primary mb-3">Submit</button>', false);
     }
 
     public function testCannotSubmitEmptyFile()
