@@ -94,4 +94,9 @@ class AffiliateControllerTest extends TestCase
             }
         }
     }
+
+    public function testUploadedEntriesShouldBeListedInAscendingOrder()
+    {
+
+    }
 }

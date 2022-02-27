@@ -23,7 +23,7 @@ class DistanceMeasurementTest extends TestCase
      * Collection of positions with expected measurement. This is to validate that measured distances are as expected
      * @var array
      */
-    private array $measurementSamples = array();
+    private array $measuredSamples = array();
 
     protected function setUp(): void
     {
@@ -32,9 +32,29 @@ class DistanceMeasurementTest extends TestCase
         $this->calculator = $application->make(SurfaceDistanceFormulaInterface::class);
         $this->centre = new AffiliateGeoPositionDto(53.3340285, -6.2535495);
         $this->first = new AffiliateGeoPositionDto(52.986375, -6.043701);
+        $this->fillSamples();
+        $this->fillMeasurementSamples();
+    }
+
+    private function fillSamples(): void
+    {
         $this->samples[] = new AffiliateGeoPositionDto(0,0);
         $this->samples[] = new AffiliateGeoPositionDto(2,3);
         $this->samples[] = new AffiliateGeoPositionDto(35,44.56);
+    }
+
+    /**
+     * Certain values will produce predictable results, since it should be proportional to radius
+     * @return void
+     */
+    private function fillMeasurementSamples(): void
+    {
+        $radius = SurfaceDistanceFormulaInterface::RADIUS;
+        $total = $radius * M_PI * 2;
+        $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(0, 90), $total / 4);
+        $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(90, 0), $total / 4);
+        $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(45, 0), $total / 8);
+        $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(0, 45), $total / 8);
     }
 
     /**
@@ -87,11 +107,13 @@ class DistanceMeasurementTest extends TestCase
      * and incorrect calculations.
      * @return void
      */
-//    public function testCalculatedDistancesBetweenCentreAndFirstPoint(): void
-//    {
-//        $this->assertNotEmpty($this->measurementSamples, 'There should be at least one sample to test.');
-//        foreach ($this->measurementSamples as $sampleCollection) {
-//
-//        }
-//    }
+    public function testCalculatedDistancesBetweenCentreAndConstantPoint(): void
+    {
+        $this->assertNotEmpty($this->measuredSamples, 'There should be at least one sample to test.');
+        foreach ($this->measuredSamples as $sample) {
+            $expected = $sample[2];
+            $found = $this->calculator->apply($sample[0], $sample[1]);
+            $this->assertEquals($expected, $found, "Expected to get distance of {$expected}, but found {$found}.");
+        }
+    }
 }
