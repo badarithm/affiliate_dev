@@ -3,6 +3,8 @@
 namespace App\Models\Dtos;
 
 
+use Illuminate\Support\Facades\Log;
+
 class AffiliateEntryDto extends AffiliateGeoPositionDto implements DistanceInterface
 {
     /**

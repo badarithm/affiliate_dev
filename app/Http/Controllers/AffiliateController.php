@@ -50,8 +50,6 @@ class AffiliateController extends Controller
             ->withinRadius(100.0)
             ->sortByRadius();
 
-//        dd($collection);
         return view('implementation.affiliate_list_view', compact('collection'));
-//        dd(explode(PHP_EOL, $request->getAffiliateFile()->getContent()));
     }
 }

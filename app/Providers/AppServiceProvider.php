@@ -39,8 +39,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Collection::macro('sortByRadius', function (): Collection {
-            return $this->sortBy(function (DistanceInterface $entry, $key): bool {
-                return $entry->getDistance();
+            return $this->sort(function (DistanceInterface $first, DistanceInterface $second): int {
+                return $first->getDistance() <= $second->getDistance() ? -1 : 1;
             });
         });
     }
