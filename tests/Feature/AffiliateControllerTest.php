@@ -34,18 +34,6 @@ class AffiliateControllerTest extends TestCase
         $response->assertSee('Submit');
     }
 
-    private function sampleFileContent(): array
-    {
-        return array('content' => implode(PHP_EOL, array(
-            json_encode(["latitude" => 52.986375, "affiliate_id" => 12, "name" =>  "Yosef Giles", "longitude" => -6.043701]),
-            json_encode(["latitude" => 51.92893, "affiliate_id" => 1, "name" =>"Lance Keith", "longitude" => -10.27699]),
-            json_encode(["latitude" => 51.8856167, "affiliate_id" => 2, "name" => "Mohamed Bradshaw", "longitude" => -10.4240951]),
-            json_encode(["latitude" => 52.3191841, "affiliate_id" => 3, "name" => "Rudi Palmer", "longitude" => -8.5072391]),
-        )),
-            'passable' => array(["latitude" => 52.986375, "affiliate_id" => 12, "name" =>  "Yosef Giles", "longitude" => -6.043701])
-        );
-    }
-
     public function testCannotSubmitEmptyFile()
     {
         $emptyFile = $this->fileFactory->createWithContent('any_other_file.txt','');
@@ -73,10 +61,44 @@ class AffiliateControllerTest extends TestCase
         $response->assertSee('Something went wrong');
     }
 
+//    private function createFileContents(array $entries): string
+//    {
+//        return array('content' => implode(PHP_EOL, array(
+//            json_encode(),
+//            json_encode(),
+//            json_encode(["latitude" => 51.8856167, "affiliate_id" => 2, "name" => "Mohamed Bradshaw", "longitude" => -10.4240951]),
+//            json_encode(["latitude" => 52.3191841, "affiliate_id" => 3, "name" => "Rudi Palmer", "longitude" => -8.5072391]),
+//        )),
+//            'passable' => array(["latitude" => 52.986375, "affiliate_id" => 12, "name" =>  "Yosef Giles", "longitude" => -6.043701])
+//        );
+//    }
+
+    private function generateFileContents(array $entries): string
+    {
+        return implode(PHP_EOL, array_map(function(array $entries): string {
+            return json_encode($entries);
+        }, $entries));
+    }
+
+    /**
+     * Only the last one should be within radius
+     * @return array[]
+     */
+    private function correctFileEntriesSample(): array
+    {
+        return array(
+            ["latitude" => 51.92893, "affiliate_id" => 1, "name" =>"Lance Keith", "longitude" => -10.27699, 'expcected' => false],
+            ["latitude" => 51.8856167, "affiliate_id" => 2, "name" => "Mohamed Bradshaw", "longitude" => -10.4240951, 'expcected' => false],
+            ["latitude" => 52.3191841, "affiliate_id" => 3, "name" => "Rudi Palmer", "longitude" => -8.5072391, 'expcected' => false],
+            ["latitude" => 52.986375, "affiliate_id" => 12, "name" =>  "Yosef Giles", "longitude" => -6.043701, 'expcected' => true],
+        );
+    }
+
     public function testCorrectFileShouldShowATable()
     {
-        $data = $this->sampleFileContent();
-        $file = $this->fileFactory->createWithContent('any_other_file.txt', $data['content']);
+        $entries = $this->correctFileEntriesSample();
+        $data = $this->generateFileContents($entries);
+        $file = $this->fileFactory->createWithContent('any_other_file.txt', $data);
         $response = $this->post('/', array(
             'affiliate_file' => $file
         ));
@@ -88,11 +110,37 @@ class AffiliateControllerTest extends TestCase
         $response->assertSee('Latitude');
         $response->assertSee('Longitude');
         $response->assertSee('Distance from centre');
-        foreach ($data['passable'] as $entries) {
-            foreach ($entries as $entry) {
-                $response->assertSee($entry);
+        foreach ($entries as $entry) {
+            if ($entry['expcected']) {
+                $response->assertSeeText($entry['latitude']);
+                $response->assertSeeText($entry['affiliate_id']);
+                $response->assertSeeText($entry['name']);
+                $response->assertSeeText($entry['longitude']);
+            } else {
+                $response->assertDontSeeText($entry['latitude']);
+//                This can coincide with some other number
+//                $response->assertDontSeeText($entry['affiliate_id']);
+                $response->assertDontSeeText($entry['name']);
+                $response->assertDontSeeText($entry['longitude']);
             }
         }
+    }
+
+    /**
+     * This is to validate that records will be ordered
+     * @return array[]
+     */
+    private function ascendingOrderTestSample(): array
+    {
+        return array(
+            array("latitude" => "53.2451022", "affiliate_id" => 4, "name" => "Inez Blair", "longitude" => "-6.238335"),
+            array("latitude" => "53.1302756", "affiliate_id" => 5, "name" => "Sharna Marriott", "longitude" => "-6.2397222"),
+            array("latitude" => "53.1229599", "affiliate_id" => 6, "name" => "Jez Greene", "longitude" =>"-6.2705202"),
+            array("latitude" => "53.0033946", "affiliate_id" => 39, "name" => "Kirandeep Browning", "longitude" => "-6.3877505"),
+            array("latitude" => "53.008769", "affiliate_id" => 11, "name" => "Isla-Rose Hubbard", "longitude" => "-6.1056711"),
+            array("latitude" => "52.986375", "affiliate_id" => 12, "name" => "Yosef Giles", "longitude" => "-6.043701"),
+            array("latitude" => "52.966", "affiliate_id" => 15, "name" => "Veronica Haines", "longitude" => "-6.463"),
+        );
     }
 
     public function testUploadedEntriesShouldBeListedInAscendingOrder()
