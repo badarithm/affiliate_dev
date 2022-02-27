@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AffiliateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::view('/', 'welcome');
+Route::controller(AffiliateController::class)->group(function() {
+    Route::get('/', 'welcome')->name('welcome');
+    Route::get('affiliate-list', 'form')->name('affiliate.file-upload-form');
+    Route::post('affiliate-list', 'affiliateList')->name('affiliate.filtered-list');
 });
+
