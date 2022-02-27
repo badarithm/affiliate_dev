@@ -143,8 +143,28 @@ class AffiliateControllerTest extends TestCase
         );
     }
 
+    /**
+     * Have pre-selected part of the file in expected order. Then get those entries, generate file from them and use
+     * the same array to regroup values by keys and validate order using response.
+     * @return void
+     */
     public function testUploadedEntriesShouldBeListedInAscendingOrder()
     {
+        $entries = $this->ascendingOrderTestSample();
+        $groups = array_reduce($entries, function (array $carry, array $entry): array {
+            foreach ($carry as $key => $value) {
+                $carry[$key][] = $entry[$key];
+            }
+            return $carry;
+        }, array('latitude' => [], 'name' => [], 'longitude' => []));
+        $data = $this->generateFileContents($entries);
+        $file = $this->fileFactory->createWithContent('ordered_entries_test.txt', $data);
+        $response = $this->post('/', array(
+            'affiliate_file' => $file
+        ));
 
+        foreach ($groups as $group) {
+            $response->assertSeeTextInOrder($group, true);
+        }
     }
 }
