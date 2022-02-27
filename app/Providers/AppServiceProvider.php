@@ -6,6 +6,7 @@ use App\Models\Dtos\DistanceInterface;
 use App\Services\DistanceFormulas\HaversineFormula;
 use App\Services\DistanceFormulas\SurfaceDistanceFormulaInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

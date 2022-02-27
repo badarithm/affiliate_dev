@@ -4,7 +4,7 @@
 
 @section('form-input')
     <div class="mb-3">
-        <label for="affiliate-file" class="form-label">Affiliate File</label>
+        <label for="affiliate-file" class="form-label">Please attach file with affiliate locations</label>
         <input name="affiliate_file" class="form-control" type="file" id="affiliate-file">
         @if(isset($errors) && $errors->has('affiliate_file'))
             <label for="affiliate-file">
