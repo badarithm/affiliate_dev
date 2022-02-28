@@ -53,7 +53,9 @@ class DistanceMeasurementTest extends TestCase
         $total = $radius * M_PI * 2;
         $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(0, 90), $total / 4);
         $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(90, 0), $total / 4);
+        $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(-90, 0), $total / 4);
         $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(45, 0), $total / 8);
+        $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(-45, 0), $total / 8);
         $this->measuredSamples[] = array(new AffiliateGeoPositionDto(0,0), new AffiliateGeoPositionDto(0, 45), $total / 8);
     }
 
